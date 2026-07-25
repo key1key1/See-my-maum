@@ -185,6 +185,9 @@ const PARENT_BODY = {
 
 /* ─── 상태 ─── */
 let state = { step:"age", age:null, minds:[], bodies:[] };
+/* 안내 음성은 "화면이 바뀔 때 한 번만" 나오게 하기 위한 기록 */
+let lastAutoStep = null;
+let autoTimer = null;
 
 /* ─── 마스코트 SVG ─── */
 function mascot(mood, size, bounce) {
@@ -256,7 +259,13 @@ function togglePick(kind, id) {
   render();
 }
 function go(step) { state.step = step; render(); }
-function restart() { state = { step:"age", age:null, minds:[], bodies:[] }; try{speechSynthesis.cancel();}catch(e){} render(); }
+function restart() {
+  state = { step:"age", age:null, minds:[], bodies:[] };
+  lastAutoStep = null;
+  clearTimeout(autoTimer);
+  try{speechSynthesis.cancel();}catch(e){}
+  render();
+}
 
 /* ─── 렌더 ─── */
 function render() {
@@ -287,6 +296,7 @@ function render() {
           onclick="togglePick('minds','${m.id}')">
           <span class="chk">✅</span><span class="e">${m.emoji}</span><span class="t">${m.label}</span></button>`).join("")}
       </div>
+      <p class="hint">고른 마음 ${state.minds.length} / 2 · 다시 누르면 취소돼요</p>
       <button class="bigBtn" ${state.minds.length===0?"disabled":""} onclick="go('body')">다 골랐어요 ➜</button>`;
   }
 
@@ -298,6 +308,7 @@ function render() {
           onclick="togglePick('bodies','${b.id}')">
           <span class="chk">✅</span><span class="e">${b.emoji}</span><span class="t">${b.label}</span></button>`).join("")}
       </div>
+      <p class="hint">고른 몸 상태 ${state.bodies.length} / 2 · 다시 누르면 취소돼요</p>
       <div class="row">
         <button class="bigBtn gray" onclick="go('mind')">⬅ 뒤로</button>
         <button class="bigBtn" ${state.bodies.length===0?"disabled":""} onclick="go('guide')">다 골랐어요 ➜</button>
@@ -342,8 +353,17 @@ function render() {
   }
 
   app.innerHTML = html;
-  window.scrollTo(0, 0);
-  if (autoText) setTimeout(() => speak(autoText), 350);
+
+  const stepChanged = lastAutoStep !== state.step;
+  if (stepChanged) window.scrollTo(0, 0);
+
+  // 안내 음성은 화면이 처음 열릴 때만. 같은 화면에서 카드를 고를 때는
+  // 방금 읽어 준 선택지 이름("신나요")을 끊지 않도록 다시 말하지 않습니다.
+  if (autoText && stepChanged) {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(() => speak(autoText), 350);
+  }
+  lastAutoStep = state.step;
 }
 
 render();
