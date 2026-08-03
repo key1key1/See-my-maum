@@ -1,372 +1,919 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>마음코치 · 아이 감정 코칭</title>
-<!-- 홈 화면에 추가하면 앱처럼 실행돼요 -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="theme-color" content="#FFF8E8" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🌈</text></svg>" />
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23FFC94D'/><text y='0.85em' x='10' font-size='70'>🌈</text></svg>" />
-<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>곤충 배틀 도감</title>
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    min-height: 100vh;
-    background: linear-gradient(180deg,#FFF8E8 0%,#FDEED2 55%,#FBE3C4 100%);
-    font-family: 'Jua','Gowun Dodum','Noto Sans KR',sans-serif;
-    color: #5A4425;
+  @import url('https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap');
+
+  :root{
+    --cream:#FFF8EA;
+    --card:#FFFFFF;
+    --ink:#3A2E1F;
+    --ink-soft:#8A7A5E;
+    --leaf:#3FA34D;
+    --leaf-dark:#2C7A39;
+    --sun:#FFC83D;
+    --sun-dark:#E0A800;
+    --coral:#FF6F59;
+    --coral-dark:#E0503C;
+    --sky:#4FC1E0;
+    --sky-dark:#2E9FBD;
+    --line:#FFE3B8;
   }
-  #app { max-width: 560px; margin: 0 auto; padding: 20px 16px 48px; display: flex; flex-direction: column; align-items: center; }
-  h1 { font-size: 26px; margin: 0 0 6px; text-align: center; }
-  button { font-family: inherit; cursor: pointer; }
-  button:active { transform: scale(0.96); }
-
-  .stars { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; }
-  .stars span { font-size: 22px; filter: grayscale(1) opacity(0.35); transition: all .3s; }
-  .stars span.on { filter: none; }
-  .stars span.now { filter: none; transform: scale(1.25); }
-
-  .mascot { animation: bounce 1.6s ease-in-out infinite; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  @keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
-
-  .bubble {
-    background: #fff; border: 3px solid #F0D9A8; border-radius: 24px;
-    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
-    box-shadow: 0 4px 0 #F0D9A8; max-width: 480px; margin: 12px 0;
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--cream); color:var(--ink);
+    font-family:'Gowun Dodum', sans-serif;
+    -webkit-tap-highlight-color:transparent;
   }
-  .bubble p { font-size: 19px; line-height: 1.45; margin: 0; flex: 1; }
-  .speakBtn {
-    font-size: 24px; background: #FFF3D6; border: 2.5px solid #F0C96B;
-    border-radius: 50%; width: 50px; height: 50px; flex-shrink: 0;
-  }
+  h1,h2,h3, .display{ font-family:'Jua', sans-serif; font-weight:400; }
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:10px; }
 
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+  .wrap{ max-width:920px; margin:0 auto; padding:0 16px; }
 
-  .ageCard {
-    background: var(--c); border: 3px solid #5A4425; border-radius: 28px;
-    padding: 26px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;
-    box-shadow: 0 6px 0 rgba(90,68,37,.25);
-  }
-  .ageCard .e { font-size: 46px; } .ageCard .t { font-size: 24px; } .ageCard .s { font-size: 14px; color: #7A6644; }
+  /* ---------- header ---------- */
+  header{ position:sticky; top:0; z-index:20; background:var(--cream); padding-top:14px; padding-bottom:10px; border-bottom:3px solid var(--line); }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-badge{ width:52px; height:52px; border-radius:50%; background:var(--leaf); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 0 var(--leaf-dark); flex-shrink:0; }
+  .brand h1{ font-size:1.5rem; margin:0; color:var(--leaf-dark); line-height:1.1; }
+  .brand p{ margin:2px 0 0; font-size:.75rem; color:var(--ink-soft); }
+  .tabs{ display:flex; gap:10px; margin-top:12px; }
+  .tab-btn{ flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:9px 6px; border-radius:999px; border:none; font-family:'Jua',sans-serif; font-size:.82rem; cursor:pointer; background:var(--card); color:var(--ink); box-shadow:0 4px 0 var(--line); transition:transform .1s; text-align:center; line-height:1.2; }
+  .tab-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--line); }
+  .tab-btn.active.dex{ background:var(--leaf); color:#fff; box-shadow:0 4px 0 var(--leaf-dark); }
+  .tab-btn.active.fav{ background:var(--sun); color:#fff; box-shadow:0 4px 0 var(--sun-dark); }
+  .tab-btn.active.battle{ background:var(--coral); color:#fff; box-shadow:0 4px 0 var(--coral-dark); }
 
-  .pick {
-    position: relative; background: #fff; border: 3px solid #EAD9B8; border-radius: 26px;
-    padding: 16px 8px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
-    box-shadow: 0 4px 0 #EAD9B8; transition: all .18s;
-  }
-  .pick .e { font-size: 44px; line-height: 1; } .pick .t { font-size: 17px; font-weight: 700; }
-  .pick.on { background: var(--c); border: 4px solid #5A4425; transform: scale(1.04); box-shadow: 0 5px 0 #C9A85C; }
-  .pick.off { opacity: .4; pointer-events: none; }
-  .pick .chk { position: absolute; top: -10px; right: -6px; font-size: 24px; display: none; }
-  .pick.on .chk { display: block; }
+  /* ---------- buttons (chunky pop style) ---------- */
+  .btn{ font-family:'Jua',sans-serif; border:none; border-radius:999px; cursor:pointer; padding:12px 22px; font-size:1rem; color:#fff; transition:transform .08s; display:inline-flex; align-items:center; gap:8px; justify-content:center; }
+  .btn:active{ transform:translateY(3px); }
+  .btn-leaf{ background:var(--leaf); box-shadow:0 5px 0 var(--leaf-dark); }
+  .btn-leaf:active{ box-shadow:0 1px 0 var(--leaf-dark); }
+  .btn-coral{ background:var(--coral); box-shadow:0 5px 0 var(--coral-dark); }
+  .btn-coral:active{ box-shadow:0 1px 0 var(--coral-dark); }
+  .btn-sky{ background:var(--sky); box-shadow:0 5px 0 var(--sky-dark); }
+  .btn-sky:active{ box-shadow:0 1px 0 var(--sky-dark); }
+  .btn-ghost{ background:var(--card); color:var(--ink); box-shadow:0 4px 0 var(--line); }
+  .btn-ghost:active{ box-shadow:0 1px 0 var(--line); }
+  .btn:disabled{ opacity:.5; cursor:default; }
 
-  .bigBtn {
-    font-size: 22px; color: #fff; background: #FF9B6A; border: none; border-radius: 999px;
-    padding: 16px 36px; box-shadow: 0 5px 0 rgba(90,68,37,.35); margin-top: 16px; letter-spacing: .02em;
-  }
-  .bigBtn:disabled { background: #D9CDB8; box-shadow: none; }
-  .bigBtn.green { background: #7FB069; } .bigBtn.gray { background: #B8A88A; }
+  /* ---------- search / filter ---------- */
+  .search-bar{ display:flex; align-items:center; gap:8px; background:var(--card); border:3px solid var(--line); border-radius:999px; padding:10px 16px; margin:14px 0 10px; }
+  .search-bar input{ border:none; outline:none; background:transparent; flex:1; font-family:'Gowun Dodum',sans-serif; font-size:.95rem; color:var(--ink); }
+  .chip-row{ display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none; }
+  .chip-row::-webkit-scrollbar{ display:none; }
+  .chip{ flex-shrink:0; font-family:'Jua',sans-serif; font-size:.8rem; padding:8px 14px; border-radius:999px; border:none; cursor:pointer; color:#fff; opacity:.55; transition:opacity .15s, transform .1s; }
+  .chip.active{ opacity:1; transform:scale(1.05); }
 
-  .chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 6px; }
-  .chip { background: var(--c); border: 2px solid #5A4425; border-radius: 999px; padding: 6px 14px; font-size: 15px; }
+  /* ---------- 사진 없는 곤충 목록 (그룹/행) ---------- */
+  .group-section{ margin-bottom:6px; }
+  .group-header{ font-family:'Jua',sans-serif; font-size:.85rem; margin:14px 0 6px; display:flex; align-items:center; gap:7px; }
+  .group-count{ font-size:.68rem; background:var(--cream); padding:1px 8px; border-radius:999px; color:var(--ink-soft); font-family:'Gowun Dodum',sans-serif; }
+  .ins-row{ display:flex; align-items:stretch; gap:6px; margin-bottom:7px; }
+  .ins-row-main{ flex:1; display:flex; align-items:center; gap:9px; background:var(--card); border:2px solid var(--line); border-radius:14px; padding:11px 13px; cursor:pointer; text-align:left; font-family:'Gowun Dodum',sans-serif; min-width:0; }
+  .ins-row-main .dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+  .ins-row-main .ins-name{ font-family:'Jua',sans-serif; font-size:.92rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ins-row-main .ins-hab{ font-size:.85rem; opacity:.85; flex-shrink:0; }
+  .star-btn{ width:42px; flex-shrink:0; border:2px solid var(--line); background:var(--card); border-radius:14px; font-size:1.15rem; cursor:pointer; color:#D9C9A8; line-height:1; }
+  .star-btn.active{ color:var(--sun-dark); border-color:var(--sun); background:#FFF7E0; }
+  .fav-toast{ position:fixed; top:12px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:.82rem; z-index:60; box-shadow:0 4px 10px rgba(0,0,0,.2); }
+  .hab-tags{ display:flex; gap:4px; flex-wrap:wrap; }
+  .tag-pill{ font-size:.65rem; background:var(--cream); padding:2px 7px; border-radius:999px; color:var(--ink-soft); }
 
-  .guideCard {
-    display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
-    background: #fff; border: 3px solid #EAD9B8; border-radius: 22px; padding: 14px 14px;
-    box-shadow: 0 4px 0 #EAD9B8; margin-bottom: 10px; animation: pop .4s ease backwards;
-  }
-  .guideCard .num {
-    font-size: 15px; background: #FFC94D; border-radius: 50%; width: 30px; height: 30px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700;
-  }
-  .guideCard .e { font-size: 38px; flex-shrink: 0; }
-  .guideCard .t { font-size: 18px; line-height: 1.4; flex: 1; }
+  .empty-msg{ text-align:center; color:var(--ink-soft); padding:40px 0; }
 
-  .parentHead { background: #5A4425; color: #FFF3D6; border-radius: 18px; padding: 12px 18px; text-align: center; width: 100%; }
-  .parentHead p { margin: 0; font-size: 20px; } .parentHead small { font-size: 14px; opacity: .85; font-family: 'Gowun Dodum',sans-serif; }
-  .advice { background: #FFFDF6; border: 2px solid #EAD9B8; border-radius: 16px; padding: 14px 16px; width: 100%; margin-top: 12px; }
-  .advice b { font-size: 16px; color: #8A6D3B; display: block; margin-bottom: 6px; }
-  .advice p { margin: 0; font-size: 15.5px; line-height: 1.65; font-family: 'Gowun Dodum',sans-serif; }
-  .note { font-size: 13px; color: #9A8560; text-align: center; margin: 10px 0 0; font-family: 'Gowun Dodum',sans-serif; }
+  /* ---------- modal ---------- */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(58,46,31,.5); display:flex; align-items:flex-end; justify-content:center; z-index:40; }
+  @media (min-width:640px){ .modal-overlay{ align-items:center; padding:16px; } }
+  .modal-card{ background:var(--card); width:100%; max-width:520px; max-height:88vh; overflow-y:auto; border-radius:28px 28px 0 0; padding:22px; position:relative; }
+  @media (min-width:640px){ .modal-card{ border-radius:28px; } }
+  .modal-close{ position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:50%; background:var(--cream); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; }
+  .modal-breadcrumb{ font-family:'Jua',sans-serif; font-size:.7rem; letter-spacing:.02em; }
+  .modal-head{ display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .modal-avatar{ width:84px; height:84px; border-radius:50%; background:var(--cream); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
+  .modal-avatar img{ width:100%; height:100%; object-fit:cover; }
+  .modal-head h2{ font-size:1.6rem; margin:0; }
+  .stat-row{ display:flex; align-items:center; gap:8px; font-size:.75rem; margin:5px 0; }
+  .stat-row .label{ width:34px; font-family:'Jua',sans-serif; flex-shrink:0; }
+  .stat-track{ flex:1; height:12px; border-radius:999px; background:var(--line); overflow:hidden; }
+  .stat-fill{ height:100%; border-radius:999px; }
+  .stat-num{ width:26px; text-align:right; font-family:'Jua',sans-serif; }
+  .section-box{ margin-top:14px; }
+  .section-box .head{ font-family:'Jua',sans-serif; font-size:.85rem; margin-bottom:4px; }
+  .section-box p{ font-size:.92rem; line-height:1.6; margin:0; }
+  .skill-item{ background:var(--cream); border-radius:16px; padding:10px 12px; display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .skill-power{ font-family:'Jua',sans-serif; background:#fff; color:var(--coral-dark); font-size:.75rem; padding:4px 9px; border-radius:10px; flex-shrink:0; }
+  .skill-item .sname{ font-family:'Jua',sans-serif; font-size:.95rem; }
+  .skill-item .sdesc{ font-size:.78rem; color:var(--ink-soft); margin-top:1px; }
 
-  .stamp { background: #FFF3D6; border: 3px dashed #E8A93B; border-radius: 20px; padding: 12px 24px; font-size: 20px; margin-top: 8px; }
-  .center { text-align: center; display: flex; flex-direction: column; align-items: center; }
-  .row { display: flex; gap: 10px; }
-  .hint { font-size: 14px; color: #9A8560; margin: 6px 0 0; }
+  /* ---------- battle ---------- */
+  .step-label{ font-family:'Jua',sans-serif; font-size:1rem; color:var(--leaf-dark); margin:16px 0 10px; }
+  .env-card{ background:var(--card); border:3px dashed var(--line); border-radius:22px; padding:16px; text-align:center; }
+  .env-card .ename{ font-family:'Jua',sans-serif; font-size:1.1rem; color:var(--leaf-dark); }
+  .env-card .emeta{ display:flex; justify-content:center; gap:14px; font-size:.85rem; color:var(--ink-soft); margin-top:6px; }
+  .vs-row{ display:flex; justify-content:center; gap:28px; margin-bottom:16px; }
+  .vs-item{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .vs-avatar{ width:74px; height:74px; border-radius:50%; background:var(--card); border:3px dashed var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .vs-avatar img{ width:100%; height:100%; object-fit:cover; }
+  .vs-item .vname{ font-family:'Jua',sans-serif; font-size:.85rem; }
+  .action-row{ display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+
+  .hp-panel{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+  .hp-card{ background:var(--card); border-radius:20px; padding:12px; border:3px solid var(--line); }
+  .hp-card .who{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .mini-avatar{ width:26px; height:26px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--cream); display:flex; align-items:center; justify-content:center; }
+  .hp-card .who .name{ font-family:'Jua',sans-serif; font-size:.9rem; }
+  .hp-track{ height:14px; border-radius:999px; background:var(--line); overflow:hidden; }
+  .hp-fill{ height:100%; border-radius:999px; transition:width .35s; }
+  .hp-num{ font-size:.7rem; color:var(--ink-soft); margin-top:3px; }
+
+  .battle-log{ background:#fff; border:3px solid var(--line); border-radius:18px; padding:12px 14px; height:150px; overflow-y:auto; font-size:.82rem; margin-bottom:12px; }
+  .battle-log p{ margin:3px 0; }
+
+  .skill-btn{ width:100%; text-align:left; background:var(--card); border:3px solid var(--line); border-radius:18px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer; margin-bottom:9px; transition:transform .08s; font-family:'Gowun Dodum',sans-serif; }
+  .skill-btn:active{ transform:scale(.98); }
+  .skill-btn:disabled{ opacity:.5; }
+  .skill-btn .sname{ font-family:'Jua',sans-serif; font-size:.95rem; }
+  .skill-btn .sdesc{ font-size:.75rem; color:var(--ink-soft); }
+  .skill-btn .spower{ font-family:'Jua',sans-serif; background:var(--cream); color:var(--coral-dark); padding:5px 10px; border-radius:10px; flex-shrink:0; }
+  .skill-btn .spower.defense{ color:var(--sky-dark); background:#EAFBFF; }
+
+  .result-banner{ text-align:center; margin:20px 0; }
+  .result-banner .big{ font-family:'Jua',sans-serif; font-size:1.4rem; color:var(--leaf-dark); }
+
+  .load-error{ text-align:center; padding:60px 20px; color:var(--ink-soft); }
+  footer{ text-align:center; padding:26px 0; font-size:.7rem; color:#c2b190; }
 </style>
 </head>
 <body>
 <div id="app"></div>
 
 <script>
-/* ─── 음성 읽어주기 ─── */
-function speak(text) {
-  try {
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "ko-KR"; u.rate = 0.88; u.pitch = 1.15;
-    speechSynthesis.speak(u);
-  } catch (e) {}
-}
+/* ============================== 데이터/상수 ============================== */
+const ORDER_INFO = {
+  coleoptera:      { name:"딱정벌레목",     color:"#C17A3D" },
+  lepidoptera:     { name:"나비목",         color:"#E8639A" },
+  hymenoptera:     { name:"벌목",           color:"#FFB100" },
+  odonata:         { name:"잠자리목",       color:"#2FB6C9" },
+  orthoptera:      { name:"메뚜기목",       color:"#5FB44D" },
+  hemiptera:       { name:"매미노린재목",   color:"#C9A227" },
+  diptera:         { name:"파리목",         color:"#7B7FA6" },
+  mantodea:        { name:"사마귀목",       color:"#28A06A" },
+  blattodea:       { name:"바퀴목",         color:"#A6543F" },
+  archaeognatha:   { name:"돌좀목",         color:"#8B6B4A" },
+  zygentoma:       { name:"좀목",           color:"#9A8C78" },
+  ephemeroptera:   { name:"하루살이목",     color:"#5FA8D3" },
+  plecoptera:      { name:"강도래목",       color:"#4A8FA0" },
+  dermaptera:      { name:"집게벌레목",     color:"#B85C38" },
+  embioptera:      { name:"흰개미붙이목",   color:"#7C6B8F" },
+  grylloblattodea: { name:"귀뚜라미붙이목", color:"#6B8E9E" },
+  mantophasmatodea:{ name:"대벌레붙이목",   color:"#8FA05C" },
+  phasmida:        { name:"대벌레목",       color:"#6B9E5C" },
+  zoraptera:       { name:"민벌레목",       color:"#A0708F" },
+  psocodea:        { name:"다듬이목",       color:"#B0A16B" },
+  thysanoptera:    { name:"총채벌레목",     color:"#C9986B" },
+  neuroptera:      { name:"풀잠자리목",     color:"#4FAE7A" },
+  raphidioptera:   { name:"약대벌레목",     color:"#7A6B9E" },
+  megaloptera:     { name:"뱀잠자리목",     color:"#5C7C99" },
+  strepsiptera:    { name:"부채벌레목",     color:"#9E5C8F" },
+  mecoptera:       { name:"밑들이목",       color:"#8F7A5C" },
+  siphonaptera:    { name:"벼룩목",         color:"#8B4A4A" },
+  trichoptera:     { name:"날도래목",       color:"#6B7C4A" },
+};
+const HAB_ICON = { 숲:"🌲", 나무위:"🌳", 풀숲:"🌾", 물:"💧", 습지:"🪷", 도심:"🏙️", 땅:"🕳️" };
+const TIME_ICON = { 낮:"☀️", 밤:"🌙", 새벽:"🌅", 무관:"🌗" };
+const WEATHER_ICON = { 맑음:"🌤️", 비:"🌧️", 바람:"💨", 무더위:"🥵", 흐림:"☁️" };
 
-/* ─── 데이터 ─── */
-const MIND = [
-  { id:"excited", label:"신나요", emoji:"🤩", color:"#FFD46B", toddler:true },
-  { id:"happy", label:"행복해요", emoji:"😊", color:"#FFB4A2", toddler:true },
-  { id:"sad", label:"슬퍼요", emoji:"😢", color:"#9DD6F2", toddler:true },
-  { id:"angry", label:"화나요", emoji:"😠", color:"#FF9B8A", toddler:true },
-  { id:"jealous", label:"부러워요", emoji:"😤", color:"#D5BFEA", toddler:false },
-  { id:"frustrated", label:"잘 안돼요", emoji:"😖", color:"#FFC49B", toddler:true },
-  { id:"scared", label:"무서워요", emoji:"😨", color:"#B5D8CC", toddler:true },
-  { id:"bored", label:"심심해요", emoji:"🥱", color:"#CBE6B8", toddler:false },
+const ENV_CARDS = [
+  { id:"e1", name:"이슬 맺힌 숲속 새벽",     hab:"숲",   time:"새벽", weather:"맑음" },
+  { id:"e2", name:"뜨겁게 내리쬐는 한낮 풀숲", hab:"풀숲", time:"낮",   weather:"무더위" },
+  { id:"e3", name:"비 내리는 밤의 습지",       hab:"습지", time:"밤",   weather:"비" },
+  { id:"e4", name:"바람 부는 나무 위 오후",   hab:"나무위",time:"낮",  weather:"바람" },
+  { id:"e5", name:"고요한 밤의 물가",         hab:"물",   time:"밤",   weather:"맑음" },
+  { id:"e6", name:"흐린 낮의 도심 골목",      hab:"도심", time:"낮",   weather:"흐림" },
+  { id:"e7", name:"서늘한 아침의 땅속 굴",    hab:"땅",   time:"아침", weather:"흐림" },
+  { id:"e8", name:"무더운 여름밤 숲",         hab:"숲",   time:"밤",   weather:"무더위" },
 ];
-const BODY = [
-  { id:"energetic", label:"힘이 넘쳐요", emoji:"⚡", color:"#FFE08A" },
-  { id:"okay", label:"그냥 그래요", emoji:"🙂", color:"#D8E8D0" },
-  { id:"sleepy", label:"졸려요", emoji:"😴", color:"#C9D6F2" },
-  { id:"tired", label:"피곤해요", emoji:"🫠", color:"#E3D0C4" },
-  { id:"hungry", label:"배고파요", emoji:"🍽️", color:"#FFD6B8" },
-  { id:"sick", label:"아파요", emoji:"🤒", color:"#F2C4CE" },
+
+/* 오프라인/파일더블클릭 테스트용 미니 샘플 (fetch 실패시에만 사용) */
+const FALLBACK_SAMPLE = [
+  { id:"beetle1", name:"장수풍뎅이", order:"coleoptera", shape:"beetle", photoUrl:null, hab:["숲","나무위"], time:"밤",
+    stats:{hp:153,atk:85,def:70,spd:40},
+    features:"머리에 커다란 뿔이 달려 있고 몸 전체가 두꺼운 갑옷 같은 껍질로 덮여 있어요.",
+    attack:"뿔을 지렛대처럼 밀어 넣은 뒤 통째로 들어 올려 뒤집어 버려요.",
+    skills:[{name:"뿔 들이받기",power:34,type:"attack",desc:"뿔로 정면에서 세게 들이받는다."},{name:"뒤집어 던지기",power:44,type:"attack",desc:"상대를 뿔로 걸어 올려 내동댕이친다."},{name:"몸통 밀어붙이기",power:26,type:"defense",desc:"단단한 몸으로 밀어붙인다."}]},
+  { id:"mantis1", name:"사마귀", order:"mantodea", shape:"mantis", photoUrl:null, hab:["풀숲","숲","나무위"], time:"낮",
+    stats:{hp:111,atk:75,def:40,spd:55},
+    features:"낫처럼 생긴 앞다리로 유명한 곤충계의 사냥꾼이에요.",
+    attack:"몸을 숨긴 채 기다리다가 낫 같은 앞다리로 순식간에 낚아채요.",
+    skills:[{name:"낫다리 베기",power:40,type:"attack",desc:"날카로운 앞다리로 순식간에 벤다."},{name:"위장 후 기습",power:30,type:"attack",desc:"숨었다가 기습한다."},{name:"고개 돌려 정밀 조준",power:26,type:"defense",desc:"빈틈을 노린다."}]},
+  { id:"dragon1", name:"왕잠자리", order:"odonata", shape:"dragonfly", photoUrl:null, hab:["물","습지"], time:"낮", weakWeather:"바람",
+    stats:{hp:102,atk:65,def:40,spd:90},
+    features:"거의 모든 방향으로 나는 곤충계 최고의 사냥꾼 중 하나예요.",
+    attack:"압도적인 속도로 접근해 여섯 다리로 먹이를 낚아채요.",
+    skills:[{name:"급강하 낚아채기",power:36,type:"attack",desc:"빠르게 내리꽂는다."},{name:"초고속 회피비행",power:24,type:"defense",desc:"믿기 힘든 속도로 피한다."},{name:"큰턱으로 씹기",power:30,type:"attack",desc:"낚아챈 상대를 문다."}]},
+  { id:"bee1", name:"꿀벌", order:"hymenoptera", shape:"bee", photoUrl:null, hab:["풀숲","도심"], time:"낮",
+    stats:{hp:77,atk:55,def:35,spd:65},
+    features:"꽃가루를 옮겨 식물 번식을 돕는 고마운 곤충이에요.",
+    attack:"필살의 독침으로 단 한 번 있는 힘껏 쏘아요.",
+    skills:[{name:"필살의 독침",power:48,type:"attack",desc:"온 힘을 다해 침을 쏜다.", selfDamage:10},{name:"경보 페로몬",power:20,type:"attack",desc:"위험을 알린다."},{name:"재빠르게 날기",power:18,type:"defense",desc:"윙윙 접근한다."}]},
 ];
 
-const MIND_GUIDE = {
-  excited:{ toddler:[{e:"🙌",t:"엄마 아빠랑 만세를 세 번 해요!"},{e:"💃",t:"신나는 몸을 흔들흔들 춤춰요"},{e:"🤗",t:"“너무 신나!” 하고 말해 봐요"}],
-            child:[{e:"🙌",t:"신나는 마음을 몸으로 표현해요. 점프 세 번!"},{e:"🗣️",t:"무엇이 신나는지 소리 내어 말해 봐요"},{e:"🤝",t:"친구나 가족과 신나는 마음을 나눠요"}] },
-  happy:{ toddler:[{e:"🤗",t:"엄마 아빠를 꼬옥 안아 줘요"},{e:"😊",t:"거울을 보고 활짝 웃어요"},{e:"💛",t:"“좋아!” 하고 크게 말해요"}],
-          child:[{e:"📸",t:"행복한 순간을 마음 사진으로 찰칵! 기억해요"},{e:"🗣️",t:"무엇이 행복한지 한 가지 말해 봐요"},{e:"💌",t:"고마운 사람에게 웃으며 인사해요"}] },
-  sad:{ toddler:[{e:"🤗",t:"엄마 아빠 품에 꼬옥 안겨요"},{e:"😮‍💨",t:"같이 후~ 하고 숨을 크게 쉬어요"},{e:"🧸",t:"좋아하는 인형을 안아도 좋아요"}],
-        child:[{e:"😮‍💨",t:"코로 숨을 들이쉬고, 입으로 후~ 세 번 내쉬어요"},{e:"💧",t:"울고 싶으면 울어도 괜찮아요"},{e:"🗣️",t:"슬픈 마음을 어른에게 말해 봐요"}] },
-  angry:{ toddler:[{e:"🎈",t:"풍선처럼 볼을 빵빵! 후~ 하고 불어요"},{e:"✋",t:"때리거나 던지지 않아요"},{e:"🤗",t:"엄마 아빠가 안아 줄 때까지 기다려요"}],
-          child:[{e:"🛑",t:"잠깐 멈춰요! 하나, 둘, 셋… 다섯까지 세요"},{e:"😮‍💨",t:"풍선 숨쉬기: 크게 들이쉬고 천천히 후~"},{e:"🗣️",t:"“나 화났어” 하고 말로 표현해요"}] },
-  jealous:{ toddler:[{e:"🤗",t:"엄마 아빠에게 안아 달라고 해요"},{e:"🗣️",t:"“나도 하고 싶어” 하고 말해요"}],
-            child:[{e:"💭",t:"부러운 마음은 누구나 있어요. 괜찮아요"},{e:"⭐",t:"내가 잘하는 것을 한 가지 떠올려요"},{e:"🗣️",t:"“나도 해 보고 싶어” 하고 말해 봐요"}] },
-  frustrated:{ toddler:[{e:"😮‍💨",t:"후~ 숨 쉬고 잠깐 쉬어요"},{e:"🙋",t:"“도와주세요” 하고 말해요"},{e:"🐢",t:"천천히 다시 한 번 해 봐요"}],
-               child:[{e:"😮‍💨",t:"잘 안되면 잠깐 멈추고 숨을 쉬어요"},{e:"🐢",t:"천천히, 조금씩 다시 해 봐요"},{e:"🙋",t:"어려우면 도와달라고 해도 멋진 거예요"}] },
-  scared:{ toddler:[{e:"🤗",t:"엄마 아빠 손을 꼭 잡아요"},{e:"💡",t:"무서운 것을 손가락으로 가리켜요"},{e:"😮‍💨",t:"같이 후~ 숨을 쉬어요"}],
-           child:[{e:"🤲",t:"내 손을 가슴에 올리고 숨을 쉬어요"},{e:"🗣️",t:"무엇이 무서운지 어른에게 말해요"},{e:"🦁",t:"“나는 용감해” 하고 말해 봐요"}] },
-  bored:{ toddler:[{e:"🧩",t:"좋아하는 놀이를 하나 골라요"},{e:"🎶",t:"노래를 부르며 몸을 움직여요"}],
-          child:[{e:"💭",t:"하고 싶은 놀이 세 가지를 떠올려요"},{e:"🎨",t:"그중 하나를 골라서 시작해 봐요"},{e:"📚",t:"새로운 것을 구경하는 것도 좋아요"}] },
-};
+let INSECTS = [];
+let dataSource = "loading";
 
-const BODY_FIRST = {
-  sick:{ toddler:{e:"🤒",t:"아픈 곳을 엄마 아빠에게 보여 줘요. 제일 먼저!"}, child:{e:"🤒",t:"아픈 곳은 꼭 어른에게 말해요. 제일 먼저!"} },
-  hungry:{ toddler:{e:"🍚",t:"먼저 맛있는 밥이나 간식을 먹어요"}, child:{e:"🍚",t:"배가 고프면 마음도 힘들어요. 먼저 먹어요"} },
-  sleepy:{ toddler:{e:"😴",t:"포근한 곳에서 코~ 자요"}, child:{e:"😴",t:"졸릴 땐 푹 쉬는 게 최고예요"} },
-  tired:{ toddler:{e:"🛋️",t:"엄마 아빠 옆에서 뒹굴뒹굴 쉬어요"}, child:{e:"🛋️",t:"몸이 피곤하면 잠깐 누워서 쉬어요"} },
-  energetic:{ toddler:{e:"🏃",t:"몸을 신나게 움직이며 놀아요"}, child:{e:"🏃",t:"넘치는 힘은 뛰고 움직이며 풀어요"} },
-};
-const BODY_PRIORITY = ["sick","hungry","sleepy","tired","energetic"];
+/* ============================== 표본 글리프 (SVG 문자열) ============================== */
+function glyphSVG(shape, color, size){
+  const p = `width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"`;
+  switch(shape){
+    case "beetle": return `<svg ${p}><ellipse cx="50" cy="56" rx="26" ry="32"/><line x1="50" y1="26" x2="50" y2="86"/><circle cx="50" cy="20" r="8" fill="${color}" stroke="none"/><line x1="43" y1="14" x2="34" y2="5"/><line x1="57" y1="14" x2="66" y2="5"/></svg>`;
+    case "butterfly": return `<svg ${p}><ellipse cx="30" cy="38" rx="20" ry="26" transform="rotate(-15 30 38)"/><ellipse cx="70" cy="38" rx="20" ry="26" transform="rotate(15 70 38)"/><ellipse cx="34" cy="70" rx="13" ry="17" transform="rotate(-10 34 70)"/><ellipse cx="66" cy="70" rx="13" ry="17" transform="rotate(10 66 70)"/><line x1="50" y1="18" x2="50" y2="86" stroke-width="4"/><line x1="50" y1="20" x2="42" y2="8"/><line x1="50" y1="20" x2="58" y2="8"/></svg>`;
+    case "bee": return `<svg ${p}><circle cx="50" cy="24" r="10"/><ellipse cx="50" cy="58" rx="20" ry="28"/><line x1="34" y1="48" x2="66" y2="48"/><line x1="32" y1="60" x2="68" y2="60"/><ellipse cx="28" cy="42" rx="14" ry="9" transform="rotate(-25 28 42)"/><ellipse cx="72" cy="42" rx="14" ry="9" transform="rotate(25 72 42)"/></svg>`;
+    case "dragonfly": return `<svg ${p}><line x1="50" y1="10" x2="50" y2="92" stroke-width="5"/><circle cx="50" cy="14" r="7" fill="${color}" stroke="none"/><ellipse cx="24" cy="34" rx="26" ry="7" transform="rotate(-8 24 34)"/><ellipse cx="76" cy="34" rx="26" ry="7" transform="rotate(8 76 34)"/><ellipse cx="20" cy="52" rx="24" ry="6" transform="rotate(-4 20 52)"/><ellipse cx="80" cy="52" rx="24" ry="6" transform="rotate(4 80 52)"/></svg>`;
+    case "hopper": return `<svg ${p}><ellipse cx="42" cy="46" rx="24" ry="16" transform="rotate(-10 42 46)"/><circle cx="20" cy="38" r="8"/><path d="M60 52 L90 60 L86 74 L58 62 Z" fill="${color}" stroke="none"/><line x1="90" y1="60" x2="98" y2="50"/></svg>`;
+    case "truebug": return `<svg ${p}><path d="M50 12 L80 34 L74 82 L26 82 L20 34 Z"/><line x1="50" y1="12" x2="50" y2="82"/><line x1="50" y1="34" x2="30" y2="30"/><line x1="50" y1="34" x2="70" y2="30"/></svg>`;
+    case "fly": return `<svg ${p}><ellipse cx="50" cy="30" rx="10" ry="9"/><ellipse cx="50" cy="60" rx="16" ry="22"/><ellipse cx="24" cy="50" rx="20" ry="10" transform="rotate(-18 24 50)"/><ellipse cx="76" cy="50" rx="20" ry="10" transform="rotate(18 76 50)"/></svg>`;
+    case "mantis": return `<svg ${p}><path d="M50 8 L58 20 L42 20 Z" fill="${color}" stroke="none"/><line x1="50" y1="20" x2="50" y2="90" stroke-width="5"/><path d="M50 34 L20 20 L14 32 L44 46 Z"/><path d="M50 34 L80 20 L86 32 L56 46 Z"/><line x1="50" y1="60" x2="30" y2="72"/><line x1="50" y1="60" x2="70" y2="72"/></svg>`;
+    case "roach": return `<svg ${p}><ellipse cx="50" cy="52" rx="30" ry="38"/><circle cx="50" cy="18" r="7" fill="${color}" stroke="none"/><line x1="50" y1="20" x2="50" y2="86"/><line x1="24" y1="34" x2="10" y2="24"/><line x1="76" y1="34" x2="90" y2="24"/></svg>`;
+    case "stick": return `<svg ${p}><line x1="50" y1="15" x2="50" y2="90" stroke-width="4"/><circle cx="50" cy="10" r="6" fill="${color}" stroke="none"/><line x1="50" y1="14" x2="40" y2="4"/><line x1="50" y1="14" x2="60" y2="4"/><line x1="50" y1="30" x2="20" y2="20"/><line x1="50" y1="30" x2="80" y2="20"/><line x1="50" y1="50" x2="18" y2="55"/><line x1="50" y1="50" x2="82" y2="55"/><line x1="50" y1="70" x2="22" y2="90"/><line x1="50" y1="70" x2="78" y2="90"/></svg>`;
+    case "earwig": return `<svg ${p}><ellipse cx="50" cy="46" rx="14" ry="34"/><circle cx="50" cy="14" r="7" fill="${color}" stroke="none"/><line x1="44" y1="10" x2="34" y2="2"/><line x1="56" y1="10" x2="66" y2="2"/><path d="M42 80 Q30 90 34 98" fill="none"/><path d="M58 80 Q70 90 66 98" fill="none"/></svg>`;
+    default: return `<svg ${p}><circle cx="50" cy="50" r="30"/></svg>`;
+  }
+}
+function avatarHTML(insect, size){
+  const info = ORDER_INFO[insect.order];
+  if (insect.photoUrl){
+    return `<img src="${insect.photoUrl}" alt="${esc(insect.name)}" data-fallback-shape="${insect.shape}" data-fallback-color="${info.color}" data-fallback-size="${size}" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+  }
+  return glyphSVG(insect.shape, info.color, size);
+}
+/* 사진 로드 실패 시 SVG 그림으로 자동 대체 (error 이벤트는 버블링되지 않으므로 캡처 단계에서 위임 처리) */
+document.addEventListener("error", (e)=>{
+  const img = e.target;
+  if (img.tagName === "IMG" && img.hasAttribute("data-fallback-shape")){
+    const shape = img.getAttribute("data-fallback-shape");
+    const color = img.getAttribute("data-fallback-color");
+    const size = img.getAttribute("data-fallback-size");
+    if (img.parentElement) img.parentElement.innerHTML = glyphSVG(shape, color, size);
+  }
+}, true);
 
-const PARENT_MIND = {
-  excited:"신남을 함께 기뻐해 주세요. “정말 신났구나!” 하고 감정에 이름을 붙여 주면, 아이는 자기 마음을 아는 힘이 자랍니다. 흥분이 너무 높으면 조용한 놀이로 부드럽게 전환해 주세요.",
-  happy:"행복한 순간을 구체적으로 되짚어 주세요. “블록을 완성해서 기뻤구나”처럼 이유와 감정을 연결해 주면 긍정 정서가 오래 남습니다.",
-  sad:"슬픔을 빨리 없애 주려 하기보다 먼저 충분히 들어 주세요. “슬펐구나, 그럴 수 있어” 하고 감정을 인정한 뒤, 아이가 진정되면 이유를 천천히 물어봐 주세요. 우는 것을 혼내지 말아 주세요.",
-  angry:"화 자체는 잘못이 아니라는 것을 알려 주세요. 행동의 한계(때리기·던지기 금지)는 분명히 하되, “화가 많이 났구나” 하고 감정은 받아 주세요. 부모가 먼저 낮고 차분한 목소리를 유지하는 것이 가장 효과적입니다.",
-  jealous:"질투는 사랑받고 싶다는 신호입니다. 비교하거나 부끄럽게 만들지 말고, “너도 하고 싶었구나” 하고 마음을 읽어 주세요. 아이만의 강점을 짚어 주면 도움이 됩니다.",
-  frustrated:"결과보다 시도를 칭찬해 주세요. “끝까지 해 보려고 했네!” 바로 대신 해 주기보다, 아주 작은 단계로 나눠 성공 경험을 만들어 주세요. 도움 요청도 좋은 방법임을 알려 주세요.",
-  scared:"무서움을 “별거 아니야”라고 넘기지 말고, 무엇이 무서운지 구체적으로 물어봐 주세요. 안전하다는 것을 몸(안아 주기, 손잡기)으로 먼저 전하고, 말로 설명해 주세요.",
-  bored:"심심함은 창의력이 자라는 틈이기도 합니다. 바로 놀거리를 주기보다 “무엇을 하고 싶은지” 아이가 스스로 고르게 기다려 주세요.",
-};
-const PARENT_BODY = {
-  sick:"아픈 곳을 먼저 확인해 주세요. 컨디션이 나쁠 때는 감정 기복이 커지는 것이 자연스럽습니다. 오늘은 감정 교육보다 회복이 우선입니다.",
-  hungry:"허기는 짜증과 떼로 나타나기 쉽습니다. 간단한 간식 후에 대화를 이어 가면 훨씬 수월합니다.",
-  sleepy:"졸릴 때의 감정 폭발은 훈육의 대상이 아닙니다. 수면을 먼저 챙기고, 대화는 깨어난 뒤로 미뤄 주세요.",
-  tired:"피곤할 때는 요구를 줄이고 쉬는 환경을 만들어 주세요. 아이가 쉬는 것을 “게으름”으로 여기지 않도록 해 주세요.",
-  energetic:"에너지가 넘칠 때는 충분한 신체 활동 기회를 주세요. 뛰고 난 뒤에 차분한 활동으로 넘어가면 조절이 쉬워집니다.",
-  okay:"특별한 문제가 없어 보여도 오늘의 기분을 물어보는 습관 자체가 아이의 정서 어휘를 키웁니다.",
-};
-
-/* ─── 상태 ─── */
-let state = { step:"age", age:null, minds:[], bodies:[] };
-/* 안내 음성은 "화면이 바뀔 때 한 번만" 나오게 하기 위한 기록 */
-let lastAutoStep = null;
-let autoTimer = null;
-
-/* ─── 마스코트 SVG ─── */
-function mascot(mood, size, bounce) {
-  const eyes = mood === "big"
-    ? `<path d="M 32 50 Q 38 42 44 50" stroke="#5A4425" stroke-width="4" fill="none" stroke-linecap="round"/>
-       <path d="M 66 50 Q 72 42 78 50" stroke="#5A4425" stroke-width="4" fill="none" stroke-linecap="round"/>`
-    : `<circle cx="38" cy="50" r="4.5" fill="#5A4425"/><circle cx="72" cy="50" r="4.5" fill="#5A4425"/>`;
-  const mouth = mood === "big" ? "M 36 62 Q 55 86 74 62" : mood === "calm" ? "M 40 68 Q 55 74 70 68" : "M 38 66 Q 55 80 72 66";
-  return `<div class="${bounce ? "mascot" : ""}" style="width:${size}px;height:${size}px">
-    <svg viewBox="0 0 110 110" width="100%" height="100%">
-      <defs><radialGradient id="mg" cx="35%" cy="30%">
-        <stop offset="0%" stop-color="#FFE9A8"/><stop offset="100%" stop-color="#FFC94D"/>
-      </radialGradient></defs>
-      <ellipse cx="55" cy="58" rx="46" ry="44" fill="url(#mg)"/>
-      <ellipse cx="55" cy="58" rx="46" ry="44" fill="none" stroke="#E8A93B" stroke-width="2.5"/>
-      <circle cx="30" cy="66" r="7" fill="#FFAD8F" opacity="0.7"/><circle cx="80" cy="66" r="7" fill="#FFAD8F" opacity="0.7"/>
-      ${eyes}
-      <path d="${mouth}" stroke="#5A4425" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path d="M 55 14 Q 55 6 62 4" stroke="#7FB069" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <ellipse cx="66" cy="4" rx="6" ry="4" fill="#9CC97F" transform="rotate(20 66 4)"/>
-    </svg></div>`;
+/* ============================== 배틀 로직 ============================== */
+function envModifiers(insect, env){
+  let atkMult=1, defMult=1, spdMult=1; const notes=[];
+  if (insect.hab.includes(env.hab)){ atkMult*=1.2; defMult*=1.15; notes.push(`${HAB_ICON[env.hab]} 익숙한 환경이라 공격력과 방어력이 올랐다!`); }
+  if (insect.time === env.time){ spdMult*=1.25; notes.push(`${TIME_ICON[env.time]} ${env.time} 시간대라 속도가 빨라졌다!`); }
+  if (insect.weakWeather && insect.weakWeather === env.weather){ atkMult*=0.85; defMult*=0.85; spdMult*=0.85; notes.push(`${WEATHER_ICON[env.weather]} ${env.weather} 날씨에 약해져 힘이 빠졌다...`); }
+  return { atkMult, defMult, spdMult, notes };
+}
+function calcDamage(attacker, defender, skill, atkMult, defMult){
+  const base = skill.power*0.75 + attacker.stats.atk*0.35;
+  const defVal = defender.stats.def*defMult*0.4;
+  let raw = Math.max(6, base-defVal);
+  raw *= atkMult;
+  raw *= 0.9 + Math.random()*0.2;
+  return Math.round(raw);
+}
+/* 크리티컬: 자기 활동 시간대(밤/낮 등)와 환경이 맞으면 확률이 더 높아짐 */
+function rollCrit(attacker, env){
+  let chance = 0.15;
+  if (attacker.time === env.time) chance += 0.08;
+  return Math.random() < chance;
+}
+/* 회피: 방어 기술을 썼을 때만 판정. 자기 시간대와 맞거나, 상대보다 빠르면 확률 상승 */
+function rollDodge(defender, env, defSpdEff, atkSpdEff){
+  let chance = 0.30;
+  if (defender.time === env.time) chance += 0.15;
+  if (defSpdEff > atkSpdEff) chance += 0.10;
+  return Math.random() < chance;
 }
 
-function bubble(text) {
-  return `<div class="bubble"><p>${text}</p>
-    <button class="speakBtn" aria-label="소리로 듣기" onclick="speak('${text.replace(/'/g,"\\'")}')">🔊</button></div>`;
+/* ============================== 즐겨찾기 (localStorage, 최대 10종) ============================== */
+const FAV_KEY = "insectFavorites";
+const FAV_MAX = 10;
+function getFavorites(){
+  try{ const v = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); return Array.isArray(v) ? v : []; }
+  catch(e){ return []; }
+}
+function isFavorite(id){ return getFavorites().includes(id); }
+function toggleFavorite(id){
+  let favs = getFavorites();
+  if (favs.includes(id)){
+    favs = favs.filter(x => x !== id);
+  } else {
+    if (favs.length >= FAV_MAX){
+      state.favMessage = `즐겨찾기는 최대 ${FAV_MAX}종까지 담을 수 있어요!`;
+      render();
+      setTimeout(() => { state.favMessage = null; render(); }, 1800);
+      return;
+    }
+    favs.push(id);
+  }
+  try{ localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }catch(e){ /* 저장 공간 문제 등은 조용히 무시 */ }
+  render();
 }
 
-function stars(idx) {
-  let s = '<div class="stars">';
-  for (let i = 0; i < 5; i++) s += `<span class="${i < idx ? "on" : i === idx ? "now" : ""}">⭐</span>`;
-  return s + "</div>";
-}
+/* ============================== 상태 ============================== */
+let state = {
+  tab: "dex",
+  favMessage: null,
+  dex: { query:"", orderFilter:"all", detailId:null },
+  battle: { mode:null, phase:"mode-select", player:null, enemy:null, env:null, drawing:false, playerHP:0, enemyHP:0, round:1, turnStage:"p1-choose", playerChoice:null, enemyChoice:null, log:[], winner:null, busy:false, pickOrderFilter:"all", pickFavOnly:false }
+};
 
-function chips() {
-  const items = [...MIND.filter(m=>state.minds.includes(m.id)), ...BODY.filter(b=>state.bodies.includes(b.id))];
-  return `<div class="chips">${items.map(x=>`<span class="chip" style="--c:${x.color}">${x.emoji} ${x.label}</span>`).join("")}</div>`;
-}
+/* ============================== 렌더 ============================== */
+const app = document.getElementById("app");
 
-/* ─── 지침 생성 ─── */
-function buildGuide() {
-  const ageKey = state.age;
-  const steps = [];
-  const bodyHit = BODY_PRIORITY.find(b => state.bodies.includes(b));
-  if (bodyHit) steps.push(BODY_FIRST[bodyHit][ageKey]);
-  state.minds.forEach((m, i) => {
-    const g = MIND_GUIDE[m][ageKey] || [];
-    const take = state.minds.length === 2 ? (i === 0 ? 2 : 1) : g.length;
-    g.slice(0, take).forEach(s => steps.push(s));
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function closeDetail(){ state.dex.detailId = null; render(); }
+
+function chipRow(activeKey, includeAll, onSelectAttr){
+  let html = `<div class="chip-row">`;
+  if (includeAll){
+    html += `<button class="chip ${activeKey==='all'?'active':''}" style="background:#8A7A5E" data-${onSelectAttr}="all">전체</button>`;
+  }
+  Object.entries(ORDER_INFO).forEach(([key,info])=>{
+    html += `<button class="chip ${activeKey===key?'active':''}" style="background:${info.color}" data-${onSelectAttr}="${key}">${info.name}</button>`;
   });
-  return steps.slice(0, 4);
+  html += `</div>`;
+  return html;
 }
 
-/* ─── 이벤트 ─── */
-function pickAge(a) {
-  state.age = a; state.step = "mind";
-  speak(a === "toddler" ? "유아 친구구나! 엄마 아빠랑 같이 하자" : "아동 친구구나! 혼자서도 잘할 수 있어");
-  render();
-}
-function togglePick(kind, id) {
-  const list = state[kind];
-  const i = list.indexOf(id);
-  if (i >= 0) list.splice(i, 1);
-  else if (list.length < 2) {
-    list.push(id);
-    const item = (kind === "minds" ? MIND : BODY).find(x => x.id === id);
-    speak(item.label);
-  }
-  render();
-}
-function go(step) { state.step = step; render(); }
-function restart() {
-  state = { step:"age", age:null, minds:[], bodies:[] };
-  lastAutoStep = null;
-  clearTimeout(autoTimer);
-  try{speechSynthesis.cancel();}catch(e){}
-  render();
-}
-
-/* ─── 렌더 ─── */
-function render() {
-  const app = document.getElementById("app");
-  const isT = state.age === "toddler";
-  const stepIdx = { age:0, mind:1, body:2, guide:3, parent:4, end:4 }[state.step];
-  let html = `<h1>🌈 마음코치</h1>${stars(stepIdx)}`;
-  let autoText = null;
-
-  if (state.step === "age") {
-    autoText = "안녕! 나는 마음이야. 몇 살 친구인지 골라 줘!";
-    html += `<div class="center">${mascot("smile",110,true)}${bubble(autoText)}</div>
-      <div class="grid2">
-        <button class="ageCard" style="--c:#FFD9C4" onclick="pickAge('toddler')">
-          <span class="e">👶🧑‍🤝‍🧑</span><span class="t">유아</span><span class="s">만 2–4세 · 엄마 아빠랑 같이</span></button>
-        <button class="ageCard" style="--c:#C8E7DC" onclick="pickAge('child')">
-          <span class="e">🧒⭐</span><span class="t">아동</span><span class="s">만 5–8세 · 나 혼자서도 OK</span></button>
-      </div>`;
-  }
-
-  if (state.step === "mind") {
-    autoText = isT ? "지금 마음이 어때? 엄마 아빠랑 같이 골라 봐. 두 개까지 괜찮아!"
-                   : "지금 네 마음은 어때? 잘 들여다보고 골라 봐. 두 개까지 고를 수 있어!";
-    const list = MIND.filter(m => isT ? m.toddler : true);
-    html += `<div style="display:flex;align-items:flex-end;gap:8px">${mascot("smile",76,false)}${bubble(autoText)}</div>
-      <div class="grid2">${list.map(m => `
-        <button class="pick ${state.minds.includes(m.id) ? "on" : state.minds.length>=2 ? "off":""}" style="--c:${m.color}"
-          onclick="togglePick('minds','${m.id}')">
-          <span class="chk">✅</span><span class="e">${m.emoji}</span><span class="t">${m.label}</span></button>`).join("")}
-      </div>
-      <p class="hint">고른 마음 ${state.minds.length} / 2 · 다시 누르면 취소돼요</p>
-      <button class="bigBtn" ${state.minds.length===0?"disabled":""} onclick="go('body')">다 골랐어요 ➜</button>`;
-  }
-
-  if (state.step === "body") {
-    autoText = isT ? "이번엔 몸이야! 지금 몸은 어때? 같이 골라 봐" : "이번엔 몸 상태야. 지금 몸은 어떤지 골라 봐. 두 개까지!";
-    html += `<div style="display:flex;align-items:flex-end;gap:8px">${mascot("calm",76,false)}${bubble(autoText)}</div>
-      <div class="grid2">${BODY.map(b => `
-        <button class="pick ${state.bodies.includes(b.id) ? "on" : state.bodies.length>=2 ? "off":""}" style="--c:${b.color}"
-          onclick="togglePick('bodies','${b.id}')">
-          <span class="chk">✅</span><span class="e">${b.emoji}</span><span class="t">${b.label}</span></button>`).join("")}
-      </div>
-      <p class="hint">고른 몸 상태 ${state.bodies.length} / 2 · 다시 누르면 취소돼요</p>
-      <div class="row">
-        <button class="bigBtn gray" onclick="go('mind')">⬅ 뒤로</button>
-        <button class="bigBtn" ${state.bodies.length===0?"disabled":""} onclick="go('guide')">다 골랐어요 ➜</button>
-      </div>`;
-  }
-
-  if (state.step === "guide") {
-    autoText = isT ? "마음을 잘 찾았네! 이제 엄마 아빠랑 이렇게 해 보자" : "네 마음을 잘 찾았어! 정말 멋져. 이제 이렇게 해 보자";
-    const gs = buildGuide();
-    html += chips()
-      + `<div style="display:flex;align-items:flex-end;gap:8px">${mascot("big",76,true)}${bubble(autoText)}</div>
-      <div style="width:100%">${gs.map((g,i) => `
-        <button class="guideCard" style="animation-delay:${i*0.15}s" onclick="speak('${g.t.replace(/'/g,"\\'")}')">
-          <span class="num">${i+1}</span><span class="e">${g.e}</span><span class="t">${g.t}</span><span>🔊</span></button>`).join("")}
-      </div>
-      <p class="hint">카드를 누르면 소리로 들려줘요 🔊</p>
-      <button class="bigBtn green" onclick="go('parent')">${isT ? "다 했어요! 부모님 차례 ➜" : "다 했어요! ➜"}</button>`;
-  }
-
-  if (state.step === "parent") {
-    html += `<div class="parentHead"><p>👨‍👩‍👧 부모님을 위한 안내</p>
-      <small>${isT ? "아이가 고른 마음과 몸 상태에 맞춘 대처 조언이에요."
-                   : "아이가 혼자 과제를 마쳤어요. 곁에 계시다면 함께 읽어 주세요. (아이 혼자라면 건너뛰어도 돼요)"}</small></div>
-      <div style="margin-top:10px">${chips()}</div>
-      ${state.bodies.map(b => { const x = BODY.find(v=>v.id===b); return `
-        <div class="advice"><b>${x.emoji} 몸 상태 · ${x.label}</b><p>${PARENT_BODY[b]}</p></div>`; }).join("")}
-      ${state.minds.map(m => { const x = MIND.find(v=>v.id===m); return `
-        <div class="advice"><b>${x.emoji} 마음 · ${x.label}</b><p>${PARENT_MIND[m]}</p></div>`; }).join("")}
-      <p class="note">※ 일반적인 육아 정보이며, 전문 상담을 대신하지 않습니다.</p>
-      <button class="bigBtn" onclick="go('end')">확인했어요 ➜</button>`;
-  }
-
-  if (state.step === "end") {
-    autoText = isT ? "오늘 마음 찾기 참 잘했어요! 엄마 아빠랑 꼬옥 안아 주세요. 다음에 또 만나, 안녕!"
-                   : "오늘 네 마음을 스스로 잘 들여다봤어! 정말 대단해. 다음에 또 만나자, 안녕!";
-    html += `<div class="center">
-      <div style="font-size:44px;animation:pop .5s ease">🎉🏅🎉</div>
-      ${mascot("big",130,true)}${bubble(autoText)}
-      <div class="stamp">⭐ 참 잘했어요 도장 ⭐</div>
-      <button class="bigBtn green" onclick="restart()">🌈 처음부터 다시 하기</button>
+function insectRow(insect, mainAttrs){
+  const info = ORDER_INFO[insect.order];
+  const habIcons = insect.hab.map(h => HAB_ICON[h] || "").join(" ");
+  const fav = isFavorite(insect.id);
+  return `
+    <div class="ins-row">
+      <button class="ins-row-main" ${mainAttrs}>
+        <span class="dot" style="background:${info.color}"></span>
+        <span class="ins-name">${esc(insect.name)}</span>
+        <span class="ins-hab">${habIcons}</span>
+      </button>
+      <button class="star-btn ${fav?'active':''}" data-toggle-fav="${insect.id}" title="즐겨찾기">${fav?'★':'☆'}</button>
     </div>`;
-  }
-
-  app.innerHTML = html;
-
-  const stepChanged = lastAutoStep !== state.step;
-  if (stepChanged) window.scrollTo(0, 0);
-
-  // 안내 음성은 화면이 처음 열릴 때만. 같은 화면에서 카드를 고를 때는
-  // 방금 읽어 준 선택지 이름("신나요")을 끊지 않도록 다시 말하지 않습니다.
-  if (autoText && stepChanged) {
-    clearTimeout(autoTimer);
-    autoTimer = setTimeout(() => speak(autoText), 350);
-  }
-  lastAutoStep = state.step;
 }
 
+function groupedInsectList(list, mainAttrFn){
+  if (!list.length) return `<div class="empty-msg">일치하는 곤충이 없어요 🐛</div>`;
+  const groups = {};
+  list.forEach(i => { (groups[i.order] = groups[i.order] || []).push(i); });
+  const orderKeys = Object.keys(ORDER_INFO).filter(k => groups[k] && groups[k].length);
+  return orderKeys.map(k => `
+    <div class="group-section">
+      <p class="group-header" style="color:${ORDER_INFO[k].color}">${ORDER_INFO[k].name} <span class="group-count">${groups[k].length}</span></p>
+      ${groups[k].map(i => insectRow(i, mainAttrFn(i))).join("")}
+    </div>`).join("");
+}
+
+function favToast(){
+  if (!state.favMessage) return "";
+  return `<div class="fav-toast">${esc(state.favMessage)}</div>`;
+}
+
+function renderHeader(){
+  const favCount = getFavorites().length;
+  return `
+    <header>
+      <div class="wrap">
+        <div class="brand" data-set-tab="dex" style="cursor:pointer">
+          <div class="brand-badge">${glyphSVG("beetle","#FFF8EA",30)}</div>
+          <div>
+            <h1>곤충 배틀 도감</h1>
+            <p>나만의 곤충 표본을 모으고, 대결도 해보자!</p>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn dex ${state.tab==='dex'?'active':''}" data-set-tab="dex">📖 도감</button>
+          <button class="tab-btn fav ${state.tab==='favorites'?'active':''}" data-set-tab="favorites">⭐ 즐겨찾기${favCount?` (${favCount})`:""}</button>
+          <button class="tab-btn battle ${state.tab==='battle'?'active':''}" data-set-tab="battle">⚔️ 대결</button>
+        </div>
+      </div>
+    </header>`;
+}
+
+function filteredInsects(query, orderFilter, excludeId, favOnly){
+  return INSECTS.filter(i=>{
+    const okOrder = orderFilter==="all" || i.order===orderFilter;
+    const okQuery = i.name.includes(query);
+    const okExclude = !excludeId || i.id !== excludeId;
+    const okFav = !favOnly || isFavorite(i.id);
+    return okOrder && okQuery && okExclude && okFav;
+  });
+}
+
+function renderDex(){
+  const list = filteredInsects(state.dex.query, state.dex.orderFilter, null);
+  return `
+    <div class="wrap">
+      <div class="search-bar">
+        🔍 <input id="dexSearch" placeholder="곤충 이름으로 찾기" value="${esc(state.dex.query)}">
+      </div>
+      ${chipRow(state.dex.orderFilter, true, "dex-order")}
+      <p style="font-size:.75rem;color:var(--ink-soft);margin:2px 0 10px;">${list.length}종의 표본이 있어요</p>
+      <div id="dexGrid">
+        ${groupedInsectList(list, i => `data-open-detail="${i.id}"`)}
+      </div>
+    </div>
+    <div id="detailSlot"></div>`;
+}
+
+function renderFavorites(){
+  const favs = getFavorites().map(id => INSECTS.find(i => i.id === id)).filter(Boolean);
+  return `
+    <div class="wrap">
+      <p class="step-label">⭐ 나만의 표본 (${favs.length}/${FAV_MAX})</p>
+      ${favs.length
+        ? groupedInsectList(favs, i => `data-open-detail="${i.id}"`)
+        : `<div class="empty-msg">아직 담은 곤충이 없어요.<br>도감에서 ☆ 버튼을 눌러 담아보세요!</div>`}
+    </div>
+    <div id="detailSlot"></div>`;
+}
+
+function renderDetailModal(insect){
+  if (!insect) return "";
+  const info = ORDER_INFO[insect.order];
+  const statRow = (label, value, color) => `
+    <div class="stat-row"><span class="label">${label}</span>
+      <div class="stat-track"><div class="stat-fill" style="width:${value}%;background:${color}"></div></div>
+      <span class="stat-num">${value}</span>
+    </div>`;
+  const skills = insect.skills.map(s=>`
+    <div class="skill-item">
+      <span class="skill-power">${s.power}</span>
+      <div><div class="sname">${esc(s.name)}</div><div class="sdesc">${esc(s.desc)}</div></div>
+    </div>`).join("");
+  const habTags = insect.hab.map(h=>`<span class="tag-pill">${HAB_ICON[h]} ${h}</span>`).join("");
+
+  return `
+    <div class="modal-overlay" onclick="closeDetail()">
+      <div class="modal-card" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeDetail()">✕</button>
+        <p class="modal-breadcrumb" style="color:${info.color}">곤충강 › ${info.name} › ${esc(insect.name)}</p>
+        <div class="modal-head">
+          <div class="modal-avatar">${avatarHTML(insect, 60)}</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px">
+              <h2 style="margin:0">${esc(insect.name)}</h2>
+              <button class="star-btn ${isFavorite(insect.id)?'active':''}" data-toggle-fav="${insect.id}" title="즐겨찾기" style="margin-left:auto">${isFavorite(insect.id)?'★':'☆'}</button>
+            </div>
+            <div class="hab-tags" style="margin-top:4px">${habTags}<span class="tag-pill">${TIME_ICON[insect.time]} ${insect.time}</span></div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          ${statRow("체력", insect.stats.hp, "var(--leaf)")}
+          ${statRow("공격", insect.stats.atk, "var(--coral)")}
+          ${statRow("방어", insect.stats.def, "var(--sky)")}
+          ${statRow("속도", insect.stats.spd, "var(--sun)")}
+        </div>
+        <div class="section-box"><p class="head" style="color:var(--leaf-dark)">🔍 특징</p><p>${esc(insect.features)}</p></div>
+        <div class="section-box"><p class="head" style="color:var(--coral-dark)">⚔️ 공격 방법</p><p>${esc(insect.attack)}</p></div>
+        <div class="section-box"><p class="head">✨ 기술</p>${skills}</div>
+      </div>
+    </div>`;
+}
+
+function envCardHTML(env){
+  return `
+    <div class="env-card">
+      <p class="ename">${env.name}</p>
+      <div class="emeta">
+        <span>${HAB_ICON[env.hab]} ${env.hab}</span>
+        <span>${TIME_ICON[env.time]} ${env.time}</span>
+        <span>${WEATHER_ICON[env.weather]} ${env.weather}</span>
+      </div>
+    </div>`;
+}
+
+function renderBattle(){
+  const b = state.battle;
+
+  if (b.phase === "mode-select"){
+    return `
+      <div class="wrap" style="text-align:center">
+        <p class="step-label">누구와 대결할까요?</p>
+        <div class="action-row" style="flex-direction:column;align-items:center;gap:10px">
+          <button class="btn btn-sky" data-set-mode="pvc" style="width:100%;max-width:320px">🤖 컴퓨터와 대결 (1인용)</button>
+          <button class="btn btn-coral" data-set-mode="pvp" style="width:100%;max-width:320px">🧑‍🤝‍🧑 친구와 대결 (2인용 · 같은 기기)</button>
+        </div>
+      </div>`;
+  }
+
+  if (b.phase === "pick-player" || b.phase === "pick-enemy"){
+    const excludeId = b.phase==="pick-enemy" ? b.player.id : null;
+    const list = filteredInsects(state.dex.query, b.pickOrderFilter, excludeId, b.pickFavOnly);
+    const role = b.phase==='pick-player' ? 'player' : 'enemy';
+    let label;
+    if (b.phase === "pick-player") label = b.mode==="pvp" ? "1️⃣ 플레이어 1, 곤충을 선택하세요" : "1️⃣ 내 곤충을 선택하세요";
+    else label = b.mode==="pvp" ? "2️⃣ 플레이어 2, 곤충을 선택하세요" : "2️⃣ 상대(컴퓨터) 곤충을 선택하세요";
+    const favCount = getFavorites().length;
+    return `
+      <div class="wrap">
+        <p class="step-label">${label}</p>
+        ${b.phase==="pick-enemy" ? `
+          <div class="action-row" style="margin-bottom:12px">
+            ${b.mode==="pvc" ? `<button class="btn btn-sky" data-random-enemy="1">🎲 랜덤 상대 뽑기</button>` : ``}
+            <button class="btn btn-ghost" data-back-to-pick-player="1">← 다시 선택</button>
+          </div>` : ``}
+        <div class="chip-row">
+          <button class="chip ${!b.pickFavOnly?'active':''}" style="background:#8A7A5E" data-set-pick-fav="0">전체</button>
+          <button class="chip ${b.pickFavOnly?'active':''}" style="background:var(--sun-dark)" data-set-pick-fav="1">⭐ 즐겨찾기 (${favCount})</button>
+        </div>
+        ${chipRow(b.pickOrderFilter, true, "pick-order")}
+        <div>
+          ${groupedInsectList(list, i => `data-pick-insect="${i.id}" data-pick-role="${role}"`)}
+        </div>
+      </div>`;
+  }
+
+  if (b.phase === "draw-env"){
+    return `
+      <div class="wrap" style="text-align:center">
+        <p class="step-label">3️⃣ 환경 카드를 뽑아보세요</p>
+        <div class="vs-row">
+          <div class="vs-item"><div class="vs-avatar">${avatarHTML(b.player,44)}</div><p class="vname">${esc(b.player.name)}</p></div>
+          <div class="vs-item"><div class="vs-avatar">${avatarHTML(b.enemy,44)}</div><p class="vname">${esc(b.enemy.name)}</p></div>
+        </div>
+        ${b.env ? envCardHTML(b.env) : `<div class="env-card"><p style="color:var(--ink-soft);margin:0">아직 카드를 뽑지 않았어요</p></div>`}
+        <div class="action-row">
+          <button class="btn btn-sky" data-draw-env="1" ${b.drawing?"disabled":""}>✨ ${b.drawing? "뽑는 중...": (b.env? "다시 뽑기":"환경 카드 뽑기!")}</button>
+          ${b.env && !b.drawing ? `<button class="btn btn-coral" data-start-battle="1">대결 시작 ⚔️</button>` : ``}
+        </div>
+      </div>`;
+  }
+
+  if (b.phase === "battling" || b.phase === "result"){
+    let bodyHtml = "";
+    if (b.phase === "battling"){
+      if (b.turnStage === "handoff"){
+        bodyHtml = `
+          <div style="text-align:center;padding:30px 10px">
+            <p style="font-size:2rem;margin:0 0 8px">🙈</p>
+            <p style="font-family:'Jua',sans-serif;font-size:1.05rem;color:var(--leaf-dark)">플레이어 2에게 기기를 넘겨주세요</p>
+            <p style="font-size:.8rem;color:var(--ink-soft);margin:6px 0 16px">플레이어 1이 고른 기술은 보이지 않아요. 화면을 확인한 뒤 계속해주세요.</p>
+            <button class="btn btn-coral" data-continue-handoff="1">확인했어요, 계속하기 →</button>
+          </div>`;
+      } else if (b.turnStage === "resolving"){
+        bodyHtml = `<p style="text-align:center;padding:30px 0;font-family:'Jua',sans-serif;color:var(--leaf-dark)">⚔️ 결과 공개! ...</p>`;
+      } else if (b.turnStage === "cpu-thinking"){
+        bodyHtml = `<p style="text-align:center;padding:30px 0;color:var(--ink-soft)">🤖 상대가 기술을 고르는 중...</p>`;
+      } else {
+        const side = b.turnStage === "p2-choose" ? "enemy" : "player";
+        const actor = side === "player" ? b.player : b.enemy;
+        const isHumanTurn = side === "player" || b.mode === "pvp";
+        const turnLabel = isHumanTurn
+          ? `🎯 ${esc(actor.name)}${b.mode==="pvp" ? (side==="player" ? " (플레이어 1)" : " (플레이어 2)") : ""}, 기술을 고르세요!`
+          : `🤖 ${esc(actor.name)}가 기술을 고르는 중...`;
+        bodyHtml = `
+          <p style="text-align:center;font-family:'Jua',sans-serif;color:var(--leaf-dark);margin:2px 0 10px">${turnLabel}</p>
+          ${isHumanTurn ? `
+          <div>
+            ${actor.skills.map((s,idx)=>`
+              <button class="skill-btn" data-use-skill-side="${side}" data-use-skill-idx="${idx}" ${b.busy?"disabled":""}>
+                <div><div class="sname">${esc(s.name)}</div><div class="sdesc">${esc(s.desc)}</div></div>
+                <span class="spower ${s.type==='defense'?'defense':''}">${s.type==='defense' ? '🛡️ 방어' : '⚔️ '+s.power}</span>
+              </button>`).join("")}
+          </div>` : `<p style="text-align:center;color:var(--ink-soft);font-size:.85rem">잠시만 기다려주세요...</p>`}`;
+      }
+    } else {
+      bodyHtml = `
+        <div class="result-banner">
+          <p class="big">${b.winner==="무승부" ? "🤝 무승부!" : `🏆 ${esc(b.winner)}의 승리!`}</p>
+          <div class="action-row">
+            <button class="btn btn-leaf" data-reset-battle="1">🔄 처음부터</button>
+            <button class="btn btn-sun" style="background:var(--sun);box-shadow:0 5px 0 var(--sun-dark)" data-rematch="1">같은 곤충으로 재대결</button>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="wrap">
+        <div style="margin-bottom:12px">${envCardHTML(b.env)}</div>
+        <div class="hp-panel">
+          <div class="hp-card">
+            <div class="who"><div class="mini-avatar">${avatarHTML(b.player,26)}</div><span class="name">${esc(b.player.name)}</span></div>
+            <div class="hp-track"><div class="hp-fill" style="width:${(b.playerHP/b.player.stats.hp)*100}%;background:var(--leaf)"></div></div>
+            <p class="hp-num">${b.playerHP} / ${b.player.stats.hp}</p>
+          </div>
+          <div class="hp-card">
+            <div class="who"><div class="mini-avatar">${avatarHTML(b.enemy,26)}</div><span class="name">${esc(b.enemy.name)}</span></div>
+            <div class="hp-track"><div class="hp-fill" style="width:${(b.enemyHP/b.enemy.stats.hp)*100}%;background:var(--coral)"></div></div>
+            <p class="hp-num">${b.enemyHP} / ${b.enemy.stats.hp}</p>
+          </div>
+        </div>
+        <div class="battle-log" id="battleLog">${b.log.map(l=>`<p>${esc(l)}</p>`).join("")}</div>
+        ${bodyHtml}
+      </div>`;
+  }
+  return "";
+}
+
+function render(){
+  let body = "";
+  if (dataSource === "loading"){
+    body = `<div class="load-error">🐞 곤충 데이터를 불러오는 중...</div>`;
+  } else if (dataSource === "error"){
+    body = `<div class="wrap load-error">
+      <p style="font-size:2rem;margin:0 0 10px">📭</p>
+      <p style="font-family:'Jua',sans-serif;font-size:1rem;color:var(--ink)">데이터를 불러오지 못했어요</p>
+      <p style="font-size:.85rem">이 파일을 더블클릭해서 열면 <b>insects.json</b>을 못 불러올 수 있어요.<br>
+      GitHub Pages에 올리거나, 로컬 서버(예: <code>python3 -m http.server</code>)로 열어보세요.</p>
+      <button class="btn btn-leaf" style="margin-top:14px" data-load-fallback="1">일단 샘플 4종으로 미리보기</button>
+    </div>`;
+  } else if (state.tab === "dex"){
+    body = renderDex();
+  } else if (state.tab === "favorites"){
+    body = renderFavorites();
+  } else {
+    body = renderBattle();
+  }
+  app.innerHTML = favToast() + renderHeader() + body + `<footer>${INSECTS.length}종의 곤충 표본 · 대결은 재미를 위한 상상 시뮬레이션이에요<br><a href="admin.html" style="color:#c2b190;text-decoration:underline">⚙️ 관리자</a></footer>`;
+
+  if ((state.tab==="dex" || state.tab==="favorites") && dataSource==="ready"){
+    document.getElementById("detailSlot").innerHTML = renderDetailModal(INSECTS.find(i=>i.id===state.dex.detailId));
+  }
+  if (state.tab==="dex" && dataSource==="ready"){
+    const searchEl = document.getElementById("dexSearch");
+    if (searchEl){
+      searchEl.addEventListener("input", (e)=>{
+        state.dex.query = e.target.value;
+        document.getElementById("dexGrid").innerHTML = (()=>{
+          const list = filteredInsects(state.dex.query, state.dex.orderFilter, null);
+          return groupedInsectList(list, i => `data-open-detail="${i.id}"`);
+        })();
+      });
+    }
+  }
+  const logEl = document.getElementById("battleLog");
+  if (logEl) logEl.scrollTop = logEl.scrollHeight;
+}
+
+/* ============================== 이벤트 처리 ============================== */
+document.addEventListener("click", (e)=>{
+  const t = (attr)=> e.target.closest(`[${attr}]`);
+
+  let el;
+  if (el = t("data-set-tab")){ state.tab = el.getAttribute("data-set-tab"); render(); return; }
+  if (el = t("data-dex-order")){ state.dex.orderFilter = el.getAttribute("data-dex-order"); render(); return; }
+  if (el = t("data-open-detail")){ state.dex.detailId = el.getAttribute("data-open-detail"); render(); return; }
+  if (el = t("data-toggle-fav")){ toggleFavorite(el.getAttribute("data-toggle-fav")); return; }
+
+  if (el = t("data-pick-order")){ state.battle.pickOrderFilter = el.getAttribute("data-pick-order"); render(); return; }
+  if (el = t("data-set-pick-fav")){ state.battle.pickFavOnly = el.getAttribute("data-set-pick-fav") === "1"; render(); return; }
+  if (el = t("data-set-mode")){
+    state.battle.mode = el.getAttribute("data-set-mode");
+    state.battle.phase = "pick-player";
+    state.battle.pickOrderFilter = "all";
+    render(); return;
+  }
+  if (el = t("data-pick-insect")){
+    const id = el.getAttribute("data-pick-insect");
+    const role = el.getAttribute("data-pick-role");
+    const insect = INSECTS.find(i=>i.id===id);
+    if (role==="player"){ state.battle.player = insect; state.battle.phase="pick-enemy"; state.battle.pickOrderFilter="all"; state.battle.pickFavOnly=false; }
+    else { state.battle.enemy = insect; state.battle.phase="draw-env"; state.battle.env=null; }
+    render(); return;
+  }
+  if (el = t("data-back-to-pick-player")){ state.battle.phase="pick-player"; state.battle.pickOrderFilter="all"; state.battle.pickFavOnly=false; render(); return; }
+  if (el = t("data-random-enemy")){
+    const others = INSECTS.filter(i=>i.id!==state.battle.player.id);
+    state.battle.enemy = others[Math.floor(Math.random()*others.length)];
+    state.battle.phase = "draw-env"; state.battle.env = null;
+    render(); return;
+  }
+  if (el = t("data-draw-env")){ drawEnvironment(); return; }
+  if (el = t("data-start-battle")){ startBattle(); return; }
+  if (el = t("data-use-skill-idx")){
+    const side = el.getAttribute("data-use-skill-side");
+    const idx = Number(el.getAttribute("data-use-skill-idx"));
+    chooseSkill(side, idx);
+    return;
+  }
+  if (el = t("data-continue-handoff")){
+    state.battle.turnStage = "p2-choose";
+    render(); return;
+  }
+  if (el = t("data-reset-battle")){
+    state.battle = { mode:null, phase:"mode-select", player:null, enemy:null, env:null, drawing:false, playerHP:0, enemyHP:0, round:1, turnStage:"p1-choose", playerChoice:null, enemyChoice:null, log:[], winner:null, busy:false, pickOrderFilter:"all", pickFavOnly:false };
+    render(); return;
+  }
+  if (el = t("data-rematch")){ state.battle.phase="draw-env"; state.battle.env=null; render(); return; }
+  if (el = t("data-load-fallback")){ INSECTS = FALLBACK_SAMPLE; dataSource="ready"; render(); return; }
+});
+
+function drawEnvironment(){
+  state.battle.drawing = true;
+  render();
+  let count = 0;
+  const spin = setInterval(()=>{
+    state.battle.env = ENV_CARDS[Math.floor(Math.random()*ENV_CARDS.length)];
+    render();
+    count++;
+    if (count > 8){
+      clearInterval(spin);
+      state.battle.env = ENV_CARDS[Math.floor(Math.random()*ENV_CARDS.length)];
+      state.battle.drawing = false;
+      render();
+    }
+  }, 90);
+}
+
+function startBattle(){
+  const b = state.battle;
+  b.playerHP = b.player.stats.hp;
+  b.enemyHP = b.enemy.stats.hp;
+  const pMods = envModifiers(b.player, b.env);
+  const eMods = envModifiers(b.enemy, b.env);
+  const intro = [`🎬 대결 시작! ${b.player.name} VS ${b.enemy.name}`, `매 턴 공격 또는 방어 기술을 하나씩 골라요. 상대가 뭘 낼지는 모르니 잘 예측해보세요!`];
+  pMods.notes.forEach(n=> intro.push(`${b.player.name}: ${n}`));
+  eMods.notes.forEach(n=> intro.push(`${b.enemy.name}: ${n}`));
+  b.log = intro;
+  b.winner = null;
+  b.busy = false;
+  b.round = 1;
+  b.playerChoice = null;
+  b.enemyChoice = null;
+  b.turnStage = "p1-choose";
+  b.phase = "battling";
+  render();
+}
+
+/* 적(컴퓨터) 기술 선택: 체력이 낮으면 절반 확률로 방어 기술을 우선 고려 */
+function pickCpuSkill(){
+  const b = state.battle;
+  const ratio = b.enemyHP / b.enemy.stats.hp;
+  const defenseSkills = b.enemy.skills.filter(s => s.type === "defense");
+  if (ratio < 0.35 && defenseSkills.length && Math.random() < 0.5){
+    return defenseSkills[Math.floor(Math.random() * defenseSkills.length)];
+  }
+  return b.enemy.skills[Math.floor(Math.random() * b.enemy.skills.length)];
+}
+
+function chooseSkill(side, idx){
+  const b = state.battle;
+  if (b.busy) return;
+  if (side === "player" && b.turnStage !== "p1-choose") return;
+  if (side === "enemy" && b.turnStage !== "p2-choose") return;
+
+  if (side === "player"){
+    b.playerChoice = b.player.skills[idx];
+    if (b.mode === "pvc"){
+      b.turnStage = "cpu-thinking";
+      b.busy = true;
+      render();
+      setTimeout(() => {
+        b.enemyChoice = pickCpuSkill();
+        b.turnStage = "resolving";
+        b.busy = false;
+        render();
+        setTimeout(resolveRound, 650);
+      }, 700);
+    } else {
+      b.turnStage = "handoff";
+      render();
+    }
+  } else {
+    b.enemyChoice = b.enemy.skills[idx];
+    b.turnStage = "resolving";
+    render();
+    setTimeout(resolveRound, 650);
+  }
+}
+
+/* 공격 기술이 방어 기술과 맞붙었을 때: 크리티컬/회피 판정을 포함해 한쪽 방향을 처리 */
+function resolveAttackVsDefense(ctx, attackerSide){
+  const b = state.battle;
+  const atk = attackerSide === "player" ? b.player : b.enemy;
+  const def = attackerSide === "player" ? b.enemy : b.player;
+  const atkSkill = attackerSide === "player" ? ctx.pSkill : ctx.eSkill;
+  const defSkill = attackerSide === "player" ? ctx.eSkill : ctx.pSkill;
+  const atkMods = attackerSide === "player" ? ctx.pMods : ctx.eMods;
+  const defMods = attackerSide === "player" ? ctx.eMods : ctx.pMods;
+  const atkSpdEff = attackerSide === "player" ? ctx.pSpd : ctx.eSpd;
+  const defSpdEff = attackerSide === "player" ? ctx.eSpd : ctx.pSpd;
+  const icon = attackerSide === "player" ? "🦋" : "🐜";
+
+  let dmg = calcDamage(atk, def, atkSkill, atkMods.atkMult, defMods.defMult);
+  const crit = rollCrit(atk, b.env);
+  if (crit) dmg = Math.round(dmg * 1.5);
+  const dodged = rollDodge(def, b.env, defSpdEff, atkSpdEff);
+  let finalDmg = 0;
+
+  if (dodged){
+    ctx.log.push(`🛡️ ${atk.name}의 「${atkSkill.name}」! ${def.name}가 「${defSkill.name}」로 완전히 피했다!`);
+  } else {
+    finalDmg = Math.max(1, Math.round(dmg * 0.35));
+    if (attackerSide === "player") ctx.eHP = Math.max(0, ctx.eHP - finalDmg);
+    else ctx.pHP = Math.max(0, ctx.pHP - finalDmg);
+    ctx.log.push(`${icon} ${atk.name}의 「${atkSkill.name}」!${crit ? " 💥 급소를 노렸지만" : ""} ${def.name}가 「${defSkill.name}」로 대부분 막아내고 ${finalDmg}의 피해만 입었다.`);
+  }
+
+  if (atkSkill.selfDamage){
+    if (attackerSide === "player") ctx.pHP = Math.max(0, ctx.pHP - atkSkill.selfDamage);
+    else ctx.eHP = Math.max(0, ctx.eHP - atkSkill.selfDamage);
+    ctx.log.push(`   … ${atk.name}도 ${atkSkill.selfDamage}만큼 힘이 빠졌다.`);
+  }
+  if (atkSkill.heal && finalDmg > 0){
+    if (attackerSide === "player") ctx.pHP = Math.min(b.player.stats.hp, ctx.pHP + atkSkill.heal);
+    else ctx.eHP = Math.min(b.enemy.stats.hp, ctx.eHP + atkSkill.heal);
+    ctx.log.push(`   … ${atk.name}가 체력을 ${atkSkill.heal} 회복했다.`);
+  }
+  if (defSkill.heal){
+    if (attackerSide === "player") ctx.eHP = Math.min(b.enemy.stats.hp, ctx.eHP + defSkill.heal);
+    else ctx.pHP = Math.min(b.player.stats.hp, ctx.pHP + defSkill.heal);
+    ctx.log.push(`   … ${def.name}가 방어하며 체력을 ${defSkill.heal} 회복했다.`);
+  }
+}
+
+/* 이번 라운드에 서로 고른 기술을 공개하고 결과를 계산 */
+function resolveRound(){
+  const b = state.battle;
+  const pMods = envModifiers(b.player, b.env);
+  const eMods = envModifiers(b.enemy, b.env);
+  const ctx = {
+    pSkill: b.playerChoice, eSkill: b.enemyChoice,
+    pMods, eMods,
+    pSpd: b.player.stats.spd * pMods.spdMult,
+    eSpd: b.enemy.stats.spd * eMods.spdMult,
+    pHP: b.playerHP, eHP: b.enemyHP,
+    log: [`🔓 공개! ${b.player.name}: 「${b.playerChoice.name}」 vs ${b.enemy.name}: 「${b.enemyChoice.name}」`],
+  };
+
+  if (ctx.pSkill.type === "attack" && ctx.eSkill.type === "attack"){
+    let dmgP = calcDamage(b.player, b.enemy, ctx.pSkill, pMods.atkMult, eMods.defMult);
+    const critP = rollCrit(b.player, b.env);
+    if (critP) dmgP = Math.round(dmgP * 1.5);
+    let dmgE = calcDamage(b.enemy, b.player, ctx.eSkill, eMods.atkMult, pMods.defMult);
+    const critE = rollCrit(b.enemy, b.env);
+    if (critE) dmgE = Math.round(dmgE * 1.5);
+    ctx.eHP = Math.max(0, ctx.eHP - dmgP);
+    ctx.pHP = Math.max(0, ctx.pHP - dmgE);
+    ctx.log.push(`🦋 ${b.player.name}의 「${ctx.pSkill.name}」!${critP ? " 💥 급소 공격!" : ""} ${b.enemy.name}에게 ${dmgP}의 피해!`);
+    ctx.log.push(`🐜 ${b.enemy.name}의 「${ctx.eSkill.name}」!${critE ? " 💥 급소 공격!" : ""} ${b.player.name}에게 ${dmgE}의 피해!`);
+    [["player",ctx.pSkill],["enemy",ctx.eSkill]].forEach(([side,skill]) => {
+      const actor = side==="player" ? b.player : b.enemy;
+      if (skill.selfDamage){
+        if (side==="player") ctx.pHP = Math.max(0, ctx.pHP - skill.selfDamage); else ctx.eHP = Math.max(0, ctx.eHP - skill.selfDamage);
+        ctx.log.push(`   … ${actor.name}도 ${skill.selfDamage}만큼 힘이 빠졌다.`);
+      }
+      if (skill.heal){
+        if (side==="player") ctx.pHP = Math.min(b.player.stats.hp, ctx.pHP + skill.heal); else ctx.eHP = Math.min(b.enemy.stats.hp, ctx.eHP + skill.heal);
+        ctx.log.push(`   … ${actor.name}가 체력을 ${skill.heal} 회복했다.`);
+      }
+    });
+  } else if (ctx.pSkill.type === "attack" && ctx.eSkill.type === "defense"){
+    resolveAttackVsDefense(ctx, "player");
+  } else if (ctx.pSkill.type === "defense" && ctx.eSkill.type === "attack"){
+    resolveAttackVsDefense(ctx, "enemy");
+  } else {
+    const healP = ctx.pSkill.heal || Math.round(b.player.stats.hp * 0.08);
+    const healE = ctx.eSkill.heal || Math.round(b.enemy.stats.hp * 0.08);
+    ctx.pHP = Math.min(b.player.stats.hp, ctx.pHP + healP);
+    ctx.eHP = Math.min(b.enemy.stats.hp, ctx.eHP + healE);
+    ctx.log.push(`🛡️ 둘 다 방어만 하며 견제하다 끝났다. ${b.player.name}은 체력 ${healP}, ${b.enemy.name}는 체력 ${healE}을 회복했다.`);
+  }
+
+  b.playerHP = ctx.pHP;
+  b.enemyHP = ctx.eHP;
+  b.log = [...b.log, ...ctx.log];
+
+  if (b.enemyHP <= 0 || b.playerHP <= 0){
+    const w = (b.enemyHP<=0 && b.playerHP<=0) ? "무승부" : (b.enemyHP<=0 ? b.player.name : b.enemy.name);
+    b.winner = w;
+    b.log = [...b.log, w==="무승부" ? "🤝 무승부!" : `🏆 ${w}의 승리!`];
+    b.phase = "result";
+    b.busy = false;
+    render();
+    return;
+  }
+
+  b.round++;
+  b.playerChoice = null;
+  b.enemyChoice = null;
+  b.turnStage = "p1-choose";
+  b.busy = false;
+  render();
+}
+
+/* ============================== 데이터 로드 & 시작 ============================== */
+async function loadData(){
+  try{
+    const res = await fetch("insects.json");
+    if (!res.ok) throw new Error("bad status");
+    const json = await res.json();
+    INSECTS = json.insects.filter(i=> i && i.id && !i.id.startsWith("_"));
+    dataSource = "ready";
+  }catch(e){
+    dataSource = "error";
+  }
+  render();
+}
 render();
+loadData();
 </script>
 </body>
 </html>
